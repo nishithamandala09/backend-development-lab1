@@ -2,7 +2,7 @@
 
 **Name:** Nishitha · **Registration number:** 252U1R9092 · **Section:** 111
 
-**Live link:**   https://backend-development-lab1.onrender.com/
+**Live link:**   https://backend-development-lab1.onrender.com
 ## How to run
 
 ```bash
