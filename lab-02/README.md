@@ -2,7 +2,7 @@
 
 **Name:** Nishitha · **Registration number:** 252U1R9092 · **Section:** 111
 
-**Live link:** Not deployed yet (will be added after deployment on Render)
+**Live link:** https://lab2-books.onrender.com/books/
 
 ## How to run
 
