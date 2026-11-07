@@ -102,9 +102,22 @@ Every error has the same format: `{ "message": "..." }`.
 ## Notes
 
 - **Design choice:** Placeholders (`?`) cannot be used for column names, so `order_by` and `order` are checked against a fixed whitelist before they are put into the query. All other user input goes through placeholders.
-- **Problem:** Postman showed `getaddrinfo ENOTFOUND books` when I typed only `/books/...`.
-  **Solution:** I used the full URL starting with `http://localhost:3000`.
-- **Problem:** A PUT request to a missing book returned 400 "title is required" instead of 404.
-  **Solution:** The body was empty. I added a raw JSON body, and the server then returned 404. The server checks the input before it checks whether the record exists.
-- **Debugging exercise:** (add here what you fixed in the faculty's broken version: the port conflict, the wrong import path, the table-name typo and the missing await).
-- On Render's free plan the file system is temporary, so changes from POST, PUT and DELETE are lost when the service restarts.
+
+### Debugging notes (problems I faced and how I fixed them)
+
+- **`no such table: book`:** Running the SQLite command line from the wrong folder created a new, empty `books.db` that had no table. I deleted the empty file, moved into the correct folder (`lab-03`) and ran the command again, and the real database was found.
+- **`getaddrinfo ENOTFOUND books` in Postman:** I typed only `/books/...` as the URL, so Postman treated `books` as a website name. I used the full URL starting with `http://localhost:3000`.
+- **400 "title is required" instead of 404 on PUT:** The request had no body. The server validates the input first and checks whether the record exists second. I added a raw JSON body, and then the server returned 404 for the missing book.
+- **Render deploy failed with `GLIBC_2.38 not found`:** The newest `sqlite3` package needs a newer Linux library than Render has. I installed `sqlite3@5.1.7`, pushed the change, and the deploy succeeded.
+- **Thousands of changes in Source Control:** `node_modules` was not ignored yet. I created `.gitignore` with `node_modules/` and `.env`, and the count dropped to a few files.
+
+### Debugging reference: common errors and fixes
+
+| Error | Cause | Fix |
+|---|---|---|
+| `EADDRINUSE: address already in use :::3000` | Another process is already using the port | Stop the old server (`Ctrl+C`), or find the process with `netstat -ano \| findstr :3000` and stop it with `taskkill /PID <number> /F` |
+| `Cannot find module './...'` | Wrong import path or file name in `require(...)` | Correct the path and spelling |
+| `no such table: ...` | Typo in the table name, or the wrong database file | Use the real table name (`book`) and check the database path |
+| Route returns `{}` or a Promise | Missing `await` on `db.get`, `db.all` or `db.run` | Add `await` and make the handler `async` |
+
+for each bug you really fix, in this form: error message, cause, fix.
